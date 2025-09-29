@@ -3,38 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de Funções</title>
+    <title>Visualizador de Funções - Plano Cartesiano</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>📈 Visualizador de Funções</h1>
+        <h1>📈 Visualizador de Funções - Plano Cartesiano</h1>
         
         <div class="controls">
-            <div class="input-group">
-                <label for="functionType">Tipo de Função:</label>
-                <select id="functionType">
-                    <option value="linear">Linear (ax + b)</option>
-                    <option value="quadratic">Quadrática (ax² + bx + c)</option>
-                    <option value="cubic">Cúbica (ax³ + bx² + cx + d)</option>
-                </select>
+            <div class="control-group">
+                <div class="input-group">
+                    <label for="functionType">Tipo de Função:</label>
+                    <select id="functionType">
+                        <option value="linear">Linear (ax + b)</option>
+                        <option value="quadratic">Quadrática (ax² + bx + c)</option>
+                        <option value="cubic">Cúbica (ax³ + bx² + cx + d)</option>
+                    </select>
+                </div>
+
+                <div class="coefficients">
+                    <!-- Coeficientes serão inseridos dinamicamente -->
+                </div>
             </div>
 
-            <div class="coefficients">
-                <!-- Coeficientes serão inseridos dinamicamente -->
-            </div>
+            <div class="control-group">
+                <div class="zoom-controls">
+                    <h3>Controles do Plano Cartesiano</h3>
+                    <div class="zoom-buttons">
+                        <button id="zoomOut">🔍 -</button>
+                        <button id="zoomIn">🔍 +</button>
+                        <button id="resetZoom">🔄 Resetar</button>
+                    </div>
+                    <div class="range-display">
+                        <span>Eixo X: <span id="xRange">-5 a 5</span></span>
+                        <span>Eixo Y: <span id="yRange">-10 a 10</span></span>
+                    </div>
+                </div>
 
-            <div class="range-inputs">
-                <label for="xMin">X Mín:</label>
-                <input type="number" id="xMin" value="-5" step="1">
-                
-                <label for="xMax">X Máx:</label>
-                <input type="number" id="xMax" value="5" step="1">
+                <div class="grid-controls">
+                    <label>
+                        <input type="checkbox" id="showGrid" checked>
+                        Mostrar Grade
+                    </label>
+                    <label>
+                        <input type="checkbox" id="showAxis" checked>
+                        Mostrar Eixos
+                    </label>
+                </div>
             </div>
-
-            <button id="plotButton">Plotar Gráfico</button>
-            <button id="clearButton">Limpar</button>
         </div>
 
         <div class="chart-container">
@@ -42,7 +59,7 @@
         </div>
 
         <div class="function-info">
-            <h3>Informações da Função</h3>
+            <h3>📊 Informações da Função</h3>
             <div id="infoContent"></div>
         </div>
     </div>
