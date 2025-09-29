@@ -2,6 +2,12 @@ class FunctionPlotter {
     constructor() {
         this.chart = null;
         this.currentFunctionType = 'linear';
+        this.xMin = -5;
+        this.xMax = 5;
+        this.yMin = -10;
+        this.yMax = 10;
+        this.zoomFactor = 1.2;
+        
         this.init();
     }
 
@@ -12,9 +18,13 @@ class FunctionPlotter {
     }
 
     createCoefficientInputs() {
+        this.updateCoefficientInputsForType();
+    }
+
+    updateCoefficientInputsForType() {
         const coefficientsDiv = document.querySelector('.coefficients');
         
-        const coefficientTemplates = {
+        const templates = {
             linear: [
                 { id: 'a', label: 'a (coeficiente angular)', value: '1' },
                 { id: 'b', label: 'b (coeficiente linear)', value: '0' }
@@ -32,12 +42,8 @@ class FunctionPlotter {
             ]
         };
 
-        this.updateCoefficientInputs(coefficientTemplates.linear);
-    }
-
-    updateCoefficientInputs(coefficients) {
-        const coefficientsDiv = document.querySelector('.coefficients');
         coefficientsDiv.innerHTML = '';
+        const coefficients = templates[this.currentFunctionType];
 
         coefficients.forEach(coef => {
             const div = document.createElement('div');
@@ -57,48 +63,60 @@ class FunctionPlotter {
             this.plotFunction();
         });
 
-        document.getElementById('plotButton').addEventListener('click', () => {
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            this.zoom(1/this.zoomFactor);
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            this.zoom(this.zoomFactor);
+        });
+
+        document.getElementById('resetZoom').addEventListener('click', () => {
+            this.resetZoom();
+        });
+
+        document.getElementById('showGrid').addEventListener('change', () => {
             this.plotFunction();
         });
 
-        document.getElementById('clearButton').addEventListener('click', () => {
-            this.clearChart();
+        document.getElementById('showAxis').addEventListener('change', () => {
+            this.plotFunction();
         });
 
         // Atualizar quando coeficientes mudarem
         document.querySelector('.coefficients').addEventListener('input', () => {
             this.plotFunction();
         });
-
-        document.getElementById('xMin').addEventListener('change', () => {
-            this.plotFunction();
-        });
-
-        document.getElementById('xMax').addEventListener('change', () => {
-            this.plotFunction();
-        });
     }
 
-    updateCoefficientInputsForType() {
-        const templates = {
-            linear: [
-                { id: 'a', label: 'a (coeficiente angular)', value: '1' },
-                { id: 'b', label: 'b (coeficiente linear)', value: '0' }
-            ],
-            quadratic: [
-                { id: 'a', label: 'a (coeficiente quadrático)', value: '1' },
-                { id: 'b', label: 'b (coeficiente linear)', value: '0' },
-                { id: 'c', label: 'c (termo constante)', value: '0' }
-            ],
-            cubic: [
-                { id: 'a', label: 'a (coeficiente cúbico)', value: '1' },
-                { id: 'b', label: 'b (coeficiente quadrático)', value: '0' },
-                { id: 'c', label: 'c (coeficiente linear)', value: '0' },
-                { id: 'd', label: 'd (termo constante)', value: '0' }
-            ]
-        };
+    zoom(factor) {
+        const xRange = this.xMax - this.xMin;
+        const yRange = this.yMax - this.yMin;
+        const xCenter = (this.xMin + this.xMax) / 2;
+        const yCenter = (this.yMin + this.yMax) / 2;
 
-        this.updateCoefficientInputs(templates[this.currentFunctionType]);
+        this.xMin = xCenter - (xRange * factor) / 2;
+        this.xMax = xCenter + (xRange * factor) / 2;
+        this.yMin = yCenter - (yRange * factor) / 2;
+        this.yMax = yCenter + (yRange * factor) / 2;
+
+        this.updateRangeDisplay();
+        this.plotFunction();
+    }
+
+    resetZoom() {
+        this.xMin = -5;
+        this.xMax = 5;
+        this.yMin = -10;
+        this.yMax = 10;
+        
+        this.updateRangeDisplay();
+        this.plotFunction();
+    }
+
+    updateRangeDisplay() {
+        document.getElementById('xRange').textContent = `${this.xMin.toFixed(1)} a ${this.xMax.toFixed(1)}`;
+        document.getElementById('yRange').textContent = `${this.yMin.toFixed(1)} a ${this.yMax.toFixed(1)}`;
     }
 
     getCoefficients() {
@@ -127,15 +145,14 @@ class FunctionPlotter {
 
     generateData() {
         const coefficients = this.getCoefficients();
-        const xMin = parseFloat(document.getElementById('xMin').value) || -5;
-        const xMax = parseFloat(document.getElementById('xMax').value) || 5;
-        
         const data = [];
-        const step = (xMax - xMin) / 100;
+        const step = (this.xMax - this.xMin) / 200;
 
-        for (let x = xMin; x <= xMax; x += step) {
+        for (let x = this.xMin; x <= this.xMax; x += step) {
             const y = this.calculateFunction(x, coefficients);
-            data.push({ x, y });
+            if (Math.abs(y) <= 1000) { // Limitar valores muito grandes
+                data.push({ x, y });
+            }
         }
 
         return data;
@@ -167,6 +184,7 @@ class FunctionPlotter {
                     info.push(`<strong>Raiz:</strong> x = ${raiz.toFixed(2)}`);
                     info.push(`<strong>Coeficiente angular:</strong> ${coef.a}`);
                     info.push(`<strong>Coeficiente linear:</strong> ${coef.b}`);
+                    info.push(`<strong>Intersecção Y:</strong> (0, ${coef.b})`);
                 }
                 break;
 
@@ -174,11 +192,11 @@ class FunctionPlotter {
                 const delta = coef.b * coef.b - 4 * coef.a * coef.c;
                 info.push(`<strong>Δ (delta):</strong> ${delta.toFixed(2)}`);
                 
-                if (delta >= 0) {
+                if (delta >= 0 && coef.a !== 0) {
                     const x1 = (-coef.b + Math.sqrt(delta)) / (2 * coef.a);
                     const x2 = (-coef.b - Math.sqrt(delta)) / (2 * coef.a);
                     info.push(`<strong>Raízes:</strong> x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`);
-                } else {
+                } else if (coef.a !== 0) {
                     info.push(`<strong>Raízes:</strong> Não reais`);
                 }
                 
@@ -186,22 +204,51 @@ class FunctionPlotter {
                     const xv = -coef.b / (2 * coef.a);
                     const yv = this.calculateFunction(xv, coef);
                     info.push(`<strong>Vértice:</strong> (${xv.toFixed(2)}, ${yv.toFixed(2)})`);
+                    info.push(`<strong>Concavidade:</strong> ${coef.a > 0 ? 'Para cima' : 'Para baixo'}`);
                 }
                 break;
 
             case 'cubic':
-                // Informações básicas para função cúbica
                 info.push(`<strong>Grau:</strong> 3`);
-                info.push(`<strong>Comportamento:</strong> ${coef.a > 0 ? 'Crescente' : 'Decrescente'} para x → ±∞`);
+                info.push(`<strong>Comportamento:</strong> ${coef.a > 0 ? 
+                    '→ -∞ quando x → -∞, → +∞ quando x → +∞' : 
+                    '→ +∞ quando x → -∞, → -∞ quando x → +∞'}`);
+                
+                // Encontrar raízes aproximadas
+                const roots = this.findCubicRoots(coef);
+                if (roots.length > 0) {
+                    info.push(`<strong>Raízes reais:</strong> ${roots.map(r => r.toFixed(2)).join(', ')}`);
+                }
                 break;
         }
 
         return info;
     }
 
+    findCubicRoots(coef) {
+        // Método simples para encontrar raízes reais aproximadas
+        const roots = [];
+        const step = 0.1;
+        
+        for (let x = -10; x <= 10; x += step) {
+            const y1 = this.calculateFunction(x, coef);
+            const y2 = this.calculateFunction(x + step, coef);
+            
+            if (y1 * y2 <= 0) {
+                // Encontrou mudança de sinal - raiz aproximada
+                const root = x + step/2;
+                roots.push(root);
+            }
+        }
+        
+        return roots;
+    }
+
     plotFunction() {
         const data = this.generateData();
         const ctx = document.getElementById('functionChart').getContext('2d');
+        const showGrid = document.getElementById('showGrid').checked;
+        const showAxis = document.getElementById('showAxis').checked;
 
         // Destruir chart anterior se existir
         if (this.chart) {
@@ -218,8 +265,9 @@ class FunctionPlotter {
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                     borderWidth: 3,
                     fill: false,
-                    tension: 0.1,
-                    pointRadius: 0
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
                 }]
             },
             options: {
@@ -228,43 +276,91 @@ class FunctionPlotter {
                 scales: {
                     x: {
                         type: 'linear',
-                        position: 'bottom',
+                        position: 'center',
                         title: {
                             display: true,
-                            text: 'x'
+                            text: 'Eixo X',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
                         },
+                        min: this.xMin,
+                        max: this.xMax,
                         grid: {
-                            color: 'rgba(0,0,0,0.1)'
+                            color: showGrid ? 'rgba(0,0,0,0.1)' : 'transparent',
+                            drawBorder: showAxis,
+                            drawTicks: showAxis
+                        },
+                        ticks: {
+                            display: showAxis,
+                            callback: function(value) {
+                                return value % 1 === 0 ? value : value.toFixed(1);
+                            }
                         }
                     },
                     y: {
+                        type: 'linear',
+                        position: 'center',
                         title: {
                             display: true,
-                            text: 'f(x)'
+                            text: 'Eixo Y',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
                         },
+                        min: this.yMin,
+                        max: this.yMax,
                         grid: {
-                            color: 'rgba(0,0,0,0.1)'
+                            color: showGrid ? 'rgba(0,0,0,0.1)' : 'transparent',
+                            drawBorder: showAxis,
+                            drawTicks: showAxis
+                        },
+                        ticks: {
+                            display: showAxis,
+                            callback: function(value) {
+                                return value % 1 === 0 ? value : value.toFixed(1);
+                            }
                         }
                     }
                 },
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'top'
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#495057'
+                        }
                     },
                     tooltip: {
                         mode: 'index',
-                        intersect: false
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `(${context.parsed.x.toFixed(2)}, ${context.parsed.y.toFixed(2)})`;
+                            }
+                        }
                     }
                 },
                 interaction: {
                     intersect: false,
                     mode: 'nearest'
+                },
+                elements: {
+                    line: {
+                        tension: 0 // Linhas retas entre pontos
+                    }
                 }
             }
         });
 
         this.updateFunctionInfo();
+        this.updateRangeDisplay();
     }
 
     updateFunctionInfo() {
@@ -274,16 +370,6 @@ class FunctionPlotter {
         infoContent.innerHTML = info.map(item => 
             `<div class="info-item">${item}</div>`
         ).join('');
-    }
-
-    clearChart() {
-        if (this.chart) {
-            this.chart.destroy();
-            this.chart = null;
-        }
-        
-        document.getElementById('infoContent').innerHTML = '';
-        this.updateCoefficientInputsForType();
     }
 }
 
