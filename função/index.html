@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Funções</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Visualizador de Funções</h1>
+        
+        <div class="controls">
+            <div class="input-group">
+                <label for="functionType">Tipo de Função:</label>
+                <select id="functionType">
+                    <option value="linear">Linear (ax + b)</option>
+                    <option value="quadratic">Quadrática (ax² + bx + c)</option>
+                    <option value="cubic">Cúbica (ax³ + bx² + cx + d)</option>
+                </select>
+            </div>
+
+            <div class="coefficients">
+                <!-- Coeficientes serão inseridos dinamicamente -->
+            </div>
+
+            <div class="range-inputs">
+                <label for="xMin">X Mín:</label>
+                <input type="number" id="xMin" value="-5" step="1">
+                
+                <label for="xMax">X Máx:</label>
+                <input type="number" id="xMax" value="5" step="1">
+            </div>
+
+            <button id="plotButton">Plotar Gráfico</button>
+            <button id="clearButton">Limpar</button>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="functionChart"></canvas>
+        </div>
+
+        <div class="function-info">
+            <h3>Informações da Função</h3>
+            <div id="infoContent"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
