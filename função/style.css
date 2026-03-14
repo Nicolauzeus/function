@@ -4,9 +4,24 @@
     box-sizing: border-box;
 }
 
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #111827 45%, #1e1b4b 100%);
+    --brand-gradient: linear-gradient(135deg, #06b6d4, #8b5cf6);
+    --surface: #ffffff;
+    --surface-alt: #f8fafc;
+    --surface-soft: #eef2ff;
+    --text-main: #1f2937;
+    --text-muted: #475569;
+    --border: #dbe3f0;
+    --focus: #22d3ee;
+    --accent: #7c3aed;
+    --accent-soft: rgba(124, 58, 237, 0.15);
+    --success: #10b981;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-gradient);
     min-height: 100vh;
     padding: 20px;
 }
@@ -14,14 +29,14 @@ body {
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    background: white;
+    background: var(--surface);
     border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    box-shadow: 0 24px 55px rgba(15, 23, 42, 0.35);
     overflow: hidden;
 }
 
 h1 {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--brand-gradient);
     color: white;
     padding: 25px;
     text-align: center;
@@ -31,8 +46,8 @@ h1 {
 
 .controls {
     padding: 25px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 30px;
@@ -52,24 +67,25 @@ label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #495057;
+    color: var(--text-main);
     font-size: 14px;
 }
 
 select, input[type="number"] {
     width: 100%;
     padding: 12px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border);
     border-radius: 8px;
     font-size: 16px;
     transition: all 0.3s;
-    background: white;
+    background: var(--surface);
+    color: var(--text-main);
 }
 
 select:focus, input[type="number"]:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
 }
 
 .coefficients {
@@ -89,15 +105,15 @@ select:focus, input[type="number"]:focus {
 }
 
 .zoom-controls {
-    background: white;
+    background: var(--surface);
     padding: 20px;
     border-radius: 10px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border);
 }
 
 .zoom-controls h3 {
     margin-bottom: 15px;
-    color: #495057;
+    color: var(--text-main);
     font-size: 16px;
 }
 
@@ -116,30 +132,30 @@ select:focus, input[type="number"]:focus {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--brand-gradient);
     color: white;
 }
 
 .zoom-buttons button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.35);
 }
 
 .range-display {
     display: flex;
     justify-content: space-between;
     font-size: 14px;
-    color: #6c757d;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
 .grid-controls {
     display: flex;
     gap: 20px;
-    background: white;
+    background: var(--surface);
     padding: 20px;
     border-radius: 10px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border);
 }
 
 .grid-controls label {
@@ -154,23 +170,25 @@ input[type="checkbox"] {
     width: 18px;
     height: 18px;
     cursor: pointer;
+    accent-color: var(--accent);
 }
 
 .chart-container {
     padding: 30px;
     height: 600px;
     position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
 }
 
 .function-info {
     padding: 25px;
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
+    background: var(--surface-alt);
+    border-top: 1px solid var(--border);
 }
 
 .function-info h3 {
     margin-bottom: 15px;
-    color: #495057;
+    color: var(--text-main);
     font-size: 1.3em;
 }
 
@@ -182,15 +200,15 @@ input[type="checkbox"] {
 
 .info-item {
     padding: 15px;
-    background: white;
+    background: var(--surface);
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--accent);
     font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
 }
 
 .info-item strong {
-    color: #495057;
+    color: var(--text-main);
 }
 
 /* Botões de ação */
@@ -211,22 +229,22 @@ input[type="checkbox"] {
 }
 
 .primary-button {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--brand-gradient);
     color: white;
 }
 
 .primary-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.35);
 }
 
 .secondary-button {
-    background: #6c757d;
-    color: white;
+    background: #334155;
+    color: #e2e8f0;
 }
 
 .secondary-button:hover {
-    background: #5a6268;
+    background: #1e293b;
 }
 
 @media (max-width: 1024px) {
